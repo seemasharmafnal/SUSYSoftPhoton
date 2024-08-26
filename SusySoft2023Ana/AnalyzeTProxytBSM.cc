@@ -102,10 +102,14 @@ void AnalyzeTProxytBSM::EventLoop(std::string buffer) {
     //decade = k;
 
     //std::cout << jentry << " " << MET << std::endl;
-    double wt = 0.12;
+    double wt = 1.0; //0.12;
     h_MET->Fill(MET, wt);
-    h_MET_test->Fill(1.0, wt);
-
+    h_MET_test->Fill(100.0, wt);
+    /*
+    h_MET->Fill(MET);
+    h_MET_test->Fill(100.0);
+    */
+    
     if (k > decade){
       std::cout << "h_MET->Integral()      " << h_MET->Integral()      << std::endl;
       std::cout << "h_MET_test->Integral() " << h_MET_test->Integral() << std::endl;
@@ -148,6 +152,10 @@ void AnalyzeTProxytBSM::EventLoop(std::string buffer) {
       //    } // if(jentry .. 
 
   }
+
+  std::cout << "h_MET->Integral()      " << h_MET->Integral()+h_MET->GetBinContent(101)      << std::endl;
+  std::cout << "h_MET_test->Integral() " << h_MET_test->Integral() << std::endl;
+
 }
 
 

@@ -35,8 +35,8 @@ class AnalyzeTProxytBSM : public NtupleVarsTProxy{
   int    bestPhotonIndxAmongPhotons=-100;
 
   TFile *oFile;
-  TH1F *h_MET_test;
-  TH1F *h_MET;
+  TH1D *h_MET_test;
+  TH1D *h_MET;
   TH1F *h_ele_pT, *h_ele_eta, *h_ele_phi;
   TH1F *h_pho_pT, *h_pho_eta, *h_pho_phi;
   TH1F *h_gen_pT, *h_gen_eta, *h_gen_phi;
@@ -54,8 +54,8 @@ void AnalyzeTProxytBSM::BookHistogram(const char *outFileName) {
   oFile->cd();
 
   // Book your histograms & summary counters here 
-  h_MET_test = new TH1F("h_MET_test", "h_MET_test", 100, 0.0, 4000.0);
-  h_MET = new TH1F("h_MET", "h_MET", 100, 0.0, 4000.0);
+  h_MET_test= new TH1D("h_MET_test", "h_MET_test", 100, 0.0, 4000.0);
+  h_MET     = new TH1D("h_MET", "h_MET", 100, 0.0, 4000.0);
   h_ele_pT  = new TH1F("h_ele_pT",  "h_ele_pT", 100, 0.0, 1000.0);
   h_ele_eta = new TH1F("h_ele_eta", "h_ele_eta",100, -3.0, 3.0);
   h_ele_phi = new TH1F("h_ele_phi", "h_ele_phi",100, -3.2, 3.2);
