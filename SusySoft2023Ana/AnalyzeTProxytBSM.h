@@ -28,12 +28,28 @@ class AnalyzeTProxytBSM : public NtupleVarsTProxy{
   AnalyzeTProxytBSM(const TString &inputFileList="foo.txt", const char *outFileName="histo.root",const char *dataset="data", const char *sample="sample", const char* LostlepFlag ="Flag", const char* phoID="phoID");
   ~AnalyzeTProxytBSM();
   //void     EventLoop(const char *,const char *,const char *,const char *, const char*, const char*);
-  void   EventLoop(std::string buffer);
+  //  void   EventLoop(std::string buffer);
+  void   EventLoop(std::string buffer,const char *,const char *);
+
   void   BookHistogram(const char *);//, const char *);
   Bool_t Process(Long64_t entry);
   myLV   getBestPhoton(int);
+  double getGenLep(myLV);
   int    bestPhotonIndxAmongPhotons=-100;
+  void   CrossSection_Map_Init();
+  void   DoCutFlow(int k, int decade, bool printsummary=false, bool debug=false);
+  bool   RemoveSampleOverlap(TString s_sample, myLV bestPhoton);
+  
+  enum evtSel {selNone=0, selPho=1, selMET=2, selNJet=3, selST=4, selTrgEff=5, selEvtCln=6,selJetMetPhi=7, selEMu=8, selIsoTrk=9, selRmOverlap=10};
+  std::vector<double> NEvtSel;//(10,0.0);
+  double EvtWeight;
+  //trigger efficiency weights
+  const double p0=1.787e+02,p1=6.657e+01,p2=9.47e-01;
 
+  bool genphocheck=false;
+  int  genphomatch_before=0, genphomatch_after=0;
+
+  
   TFile *oFile;
   TH1D *h_MET_test;
   TH1D *h_MET;
@@ -69,6 +85,9 @@ void AnalyzeTProxytBSM::BookHistogram(const char *outFileName) {
 }
 
 AnalyzeTProxytBSM::AnalyzeTProxytBSM(const TString &inputFileList, const char *outFileName,const char *dataset, const char *sample, const char* LostlepFlag, const char* phoID) {
+
+  NEvtSel.assign(11, 0.0);
+  EvtWeight = 1.0;
   
   std::cout << outFileName << std::endl;
 
@@ -78,8 +97,30 @@ AnalyzeTProxytBSM::AnalyzeTProxytBSM(const TString &inputFileList, const char *o
   if(nameData=="signalH") nameData="signal";
   cout<<"Treating the input files as "<<nameData<<" for setting tree branches"<<endl;
   BookHistogram(outFileName); //, N2_mass);
-  //CrossSection_Map_Init();
+  CrossSection_Map_Init();
 }
+
+void AnalyzeTProxytBSM::CrossSection_Map_Init() {
+  char *f_name_EH = new char[2000];
+  sprintf(f_name_EH,"./map_crosssection_SMprocess_v1.txt");//,chi2_method);
+  std::ifstream in_EH(f_name_EH);
+  if(!in_EH) {
+    cout<<"ERROR => "<<f_name_EH<<" Not found"<<endl;
+    //return;
+    exit(0);
+  }
+  string process_name;
+  float value, entries;
+  cout<<"File name = "<<f_name_EH<<endl;
+  while(in_EH>>process_name>>value>>entries){
+    std::pair<std::string, float> temp_pair;    
+    float weight =value/entries;
+    cout << "values: " << value << " entries: " << entries << endl;
+    temp_pair = std::make_pair(process_name,weight);
+    cross_sectionValues.insert(temp_pair);
+  }
+}
+
 
 AnalyzeTProxytBSM::~AnalyzeTProxytBSM() { 
   if (!fChain) return;

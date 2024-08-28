@@ -31,12 +31,37 @@ using ROOT::Detail::TBranchProxy;
 #include <TLorentzVector.h>
 #include "TMath.h"
 
+typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiE4D<float> > myLV;
+
 using namespace std;
 class NtupleVarsTProxy : public TSelector {
 public :
    TTree          *fChain;         //!pointer to the analyzed TTree or TChain
    TBranchProxyDirector fDirector; //!Manages the proxys
 
+     ~NtupleVarsTProxy();
+   Int_t   Version() const {return 1;}
+   void    Init(::TTree *tree);
+
+   std::map<std::string,float> cross_sectionValues;
+   // Functions used in analysis
+   double DeltaPhi(double, double);
+   double DeltaR(double eta1, double phi1, double eta2, double phi2);
+   void   sortTLorVec(vector<TLorentzVector> *);
+   double TransMass(double phi1, double phi2, double pt1, double pt2);
+   double MinDr(TLorentzVector v1,vector<TLorentzVector> v2);
+   double MinDr2(vector<TLorentzVector> v1,TLorentzVector v2);
+   double MinDr_myLV(myLV v1,vector<myLV> v2);
+   double getCrossSection(std::string process_name);  
+   double getEventWeight(TString process_name, double xsec);
+
+   // For analysis
+  bool Pass_Pho_pT  =false, Pass_MET100=false,
+       Pass_NHadJets=false, Pass_ST=false,
+       Pass_EvtCln  =false, Pass_JetMetPhi=false,
+       Pass_EMu_veto=false, Pass_Iso_trk_veto=false;
+  bool ApplyTrgEff  =false, rmOverlap=false;
+  
    // Optional User methods
    TClass         *fClass;    // Pointer to this class's description
 
@@ -927,19 +952,7 @@ public :
       Weight                                                            (&fDirector,"Weight")
       { }
 
-   ~NtupleVarsTProxy();
-   Int_t   Version() const {return 1;}
-   void    Init(::TTree *tree);
-
-   // Functions used in analysis
-   double DeltaPhi(double, double);
-   double DeltaR(double eta1, double phi1, double eta2, double phi2);
-   void   sortTLorVec(vector<TLorentzVector> *);
-   double TransMass(double phi1, double phi2, double pt1, double pt2);
-   double MinDr(TLorentzVector v1,vector<TLorentzVector> v2);
-   double MinDr2(vector<TLorentzVector> v1,TLorentzVector v2);
-   double getCrossSection(std::string process_name);
-   //ClassDef(NtupleVarsTProxy,0)
+//ClassDef(NtupleVarsTProxy,0)
 
    //ClassDef(NtupleVarsTProxy,0);
 };  //ends class NtupleVarsTProxy ...  

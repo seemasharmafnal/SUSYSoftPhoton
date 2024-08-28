@@ -3,7 +3,7 @@ CXX      = g++
 CXXFLAGS= $(shell root-config --cflags)
 LIBS    = $(shell root-config --libs ) 
 
-SOURCES = NtupleVarsTProxy.cc AnalyzeTProxytBSM.cc
+SOURCES = NtupleVarsTProxy.cc AnalyzeTProxytBSM.cc AnalyzeCutflow.cc
 HEADERS = NtupleVarsTProxy.h AnalyzeTProxytBSM.h 
 #LinkDef.h
 OBJECTS = $(SOURCES:.cc=.o)

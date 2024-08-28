@@ -34,6 +34,7 @@ double NtupleVarsTProxy::MinDr(TLorentzVector v1,vector<TLorentzVector> v2)
     }
   return dr;
 }
+
 double NtupleVarsTProxy::MinDr2(vector<TLorentzVector> v1,TLorentzVector v2)
 {
   double dr = 60;
@@ -43,18 +44,48 @@ double NtupleVarsTProxy::MinDr2(vector<TLorentzVector> v1,TLorentzVector v2)
     }
   return dr;
 }
-double NtupleVarsTProxy::getCrossSection(std::string process_name)
+
+double NtupleVarsTProxy::MinDr_myLV(myLV v1,vector<myLV> v2)
 {
-//  std::map<std::string, float>::iterator it = cross_sectionValues.find(process_name);
-//  if(it !=cross_sectionValues.end()){
-//    return it->second;
-//  }
-//  else {
-    return 0;
-//  }
+  double dr = 60;
+  for(int j=0;j<v2.size();j++)
+    { if(dr>=DeltaR(v1.Eta(),v1.Phi(),v2[j].Eta(),v2[j].Phi()))
+	{ dr = DeltaR(v1.Eta(),v1.Phi(),v2[j].Eta(),v2[j].Phi());}
+    }
+  return dr;
 }
 
+double NtupleVarsTProxy::getCrossSection(std::string process_name)
+{
+  std::map<std::string, float>::iterator it = cross_sectionValues.find(process_name);
+  //std::map<std::string, float>::iterator it = cross_sectionValues.begin();
+  //cout << it << endl;
+  if(it !=cross_sectionValues.end()){
+    return it->second;
+  } else {
+    return 0;
+  }
+}
 
+//double NtupleVarsTProxy::getEventWeight(std::string process_name, double xsec)
+double NtupleVarsTProxy::getEventWeight(TString s_Process, double xsec)
+{
+  //double xsec = getCrossSection(process_name);
+  //double xsec = constXsec;
+  //if(xsec>0)
+  if(s_Process.Contains("2018.WGJets_MonoPhoton_PtG-40to130UL") ||
+     s_Process.Contains("2018.WGJets_MonoPhoton_PtG-130UL")||
+     s_Process.Contains("2016preVFP.WGJets_MonoPhoton_PtG-40to130UL") ||
+     s_Process.Contains("2016preVFP.WGJets_MonoPhoton_PtG-130UL") ||
+     s_Process.Contains("2017.WGJets_MonoPhoton_PtG-40to130UL")||
+     s_Process.Contains("2017.WGJets_MonoPhoton_PtG-130UL")||
+     s_Process.Contains("2016postVFP.WGJets_MonoPhoton_PtG-130UL")||
+     s_Process.Contains("2016postVFP.WGJets_MonoPhoton_PtG-40to130UL")) {
+    //std::cout << "getEventWeight " << xsec*59.83*1000.0 << std::endl;
+    return xsec * 59.83 * 1000.0;}
+  else
+    return Weight * 59.83 * 1000.0;
+}
 
 void NtupleVarsTProxy::sortTLorVec(vector<TLorentzVector> *vec){
   TLorentzVector temp;
